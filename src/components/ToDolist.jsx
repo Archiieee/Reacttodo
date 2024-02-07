@@ -9,7 +9,7 @@ const ToDoList = ({ fetchTasks }) => {
   const addTask = async () => {
     try {
       await axios.post('http://localhost:5000/tasks', { task });
-      fetchTasks(); // Call fetchTasks from props
+      fetchTasks(); 
       setTask('');
     } catch (error) {
       console.error('Error adding task:', error);

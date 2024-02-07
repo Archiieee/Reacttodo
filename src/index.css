@@ -15,7 +15,7 @@ body {
 .todo-item {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* Added to push the edit and delete icons/buttons to the right */
+  justify-content: space-between;
   margin-bottom: 10px;
 }
 
@@ -28,5 +28,4 @@ body {
 .editIcon {
   cursor: pointer;
   color: #080808;
-  align-items:end;
 }
