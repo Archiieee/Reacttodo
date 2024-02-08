@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import { IconButton, ListItem, ListItemText, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
+import { IconButton, ListItem, ListItemText, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material'; // Import necessary components from @mui/material
 import axios from 'axios';
 
 const ListCom = ({ text, index, fetchTasks, deleteTask }) => {
@@ -25,7 +25,9 @@ const ListCom = ({ text, index, fetchTasks, deleteTask }) => {
   return (
     <>
       <ListItem>
-        <ListItemText primary={text} />
+        {text && text.name && (
+          <ListItemText primary={text.name} />
+        )}
         <IconButton onClick={() => setEditMode(true)}>
           <EditIcon />
         </IconButton>
