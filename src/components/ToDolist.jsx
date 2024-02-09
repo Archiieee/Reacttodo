@@ -8,9 +8,10 @@ const ToDoList = ({ fetchTasks }) => {
   const [category, setCategory] = useState('');
   const [tasks, setTasks] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
+  const [editTask, setEditTask] = useState(null);
+  const [editedTask, setEditedTask] = useState({ name: '', category: '' }); // Define editedTask
 
   useEffect(() => {
-    // Fetch tasks from the backend when the component mounts
     fetchTasks();
     fetchCategories();
   }, [fetchTasks]);
@@ -21,6 +22,15 @@ const ToDoList = ({ fetchTasks }) => {
       setAllCategories(response.data);
     } catch (error) {
       console.error('Error fetching categories:', error);
+    }
+  };
+
+  const fetchTasksByCategory = async (selectedCategory) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/tasks/${selectedCategory}`);
+      setTasks(response.data);
+    } catch (error) {
+      console.error('Error fetching tasks by category:', error);
     }
   };
 
@@ -35,32 +45,31 @@ const ToDoList = ({ fetchTasks }) => {
     }
   };
 
-  // const handleCategoryChange = async (selectedCategory) => {
-  //   if (selectedCategory === '') {
-  //     fetchTasks();
-  //   } else {
-  //     try {
-  //       const response = await axios.get(`http://localhost:5000/tasks/category/${selectedCategory}`);
-  //       setTasks(response.data);
-  //     } catch (error) {
-  //       console.error('Error fetching tasks by category:', error);
-  //     }
-  //   }
-  // };
+  const handleEdit = (task) => {
+    setEditTask(task);
+    setEditedTask({ name: task.name, category: task.category });
+  };
 
-  const handleCategoryChange = async (selectedCategory) => {
-    if (selectedCategory === '') {
-      fetchTasks(); // Fetch all tasks if no category is selected
-    } else {
-      try {
-        const response = await axios.get(`http://localhost:5000/tasks/${selectedCategory}`);
-        setTasks(response.data);
-      } catch (error) {
-        console.error('Error fetching tasks by category:', error);
-      }
+  const handleSaveEdit = async () => {
+    try {
+      await axios.put(`http://localhost:5000/tasks/${editTask._id}`, editedTask);
+      fetchTasks();
+      setTask('');
+      setCategory('');
+      setEditTask(null);
+    } catch (error) {
+      console.error('Error editing task:', error);
     }
   };
 
+  const handleCategoryChange = (selectedCategory) => {
+    if (selectedCategory === '') {
+      fetchTasks();
+    } else {
+      fetchTasksByCategory(selectedCategory);
+    }
+    setCategory(selectedCategory);
+  };
 
   return (
     <div className="main_div">
@@ -88,12 +97,29 @@ const ToDoList = ({ fetchTasks }) => {
         </select>
         <Button onClick={addTask}>Add</Button>
         <br />
-        {/* Render tasks */}
         {tasks.map(task => (
           <div key={task._id}>
             <p>{task.name}</p>
+            <Button onClick={() => handleEdit(task)}>Edit</Button>
           </div>
         ))}
+        {editTask && (
+          <div>
+            <TextField
+              type="text"
+              placeholder="Edit Task"
+              value={editedTask.name} // Use editedTask.name instead of task
+              onChange={(e) => setEditedTask({ ...editedTask, name: e.target.value })} // Update editedTask
+            />
+            <TextField
+              type="text"
+              placeholder="Edit Category"
+              value={editedTask.category} // Use editedTask.category instead of category
+              onChange={(e) => setEditedTask({ ...editedTask, category: e.target.value })} // Update editedTask
+            />
+            <Button onClick={handleSaveEdit}>Save</Button>
+          </div>
+        )}
       </div>
     </div>
   );

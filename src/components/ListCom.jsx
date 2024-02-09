@@ -8,9 +8,22 @@ const ListCom = ({ text, index, fetchTasks, deleteTask }) => {
   const [editMode, setEditMode] = useState(false);
   const [editedTask, setEditedTask] = useState(text);
 
-  const handleEdit = async () => {
+  // const handleEdit = async () => {
+  //   try {
+  //     await axios.put(`http://localhost:5000/tasks/${text._id}`, { name: editedTask.name, category: editedTask.category });
+  //     setEditMode(false);
+  //     fetchTasks();
+  //   } catch (error) {
+  //     console.error('Error editing task:', error);
+  //   }
+  // };
+  const handleEdit = () => {
+    setEditedTask(text); // Set the initial value for editing
+    setEditMode(true);
+  };
+  const handleSaveEdit = async () => {
     try {
-      await axios.put(`http://localhost:5000/tasks/${text._id}`, { name: editedTask.name, category: editedTask.category });
+      await axios.put(`http://localhost:5000/tasks/${text._id}`, editedTask);
       setEditMode(false);
       fetchTasks();
     } catch (error) {
@@ -33,7 +46,7 @@ const ListCom = ({ text, index, fetchTasks, deleteTask }) => {
         {text && text.name && (
           <ListItemText primary={text.name} />
         )}
-        <IconButton onClick={() => setEditMode(true)}>
+        <IconButton onClick={handleEdit}>
           <EditIcon />
         </IconButton>
         <IconButton onClick={handleDelete}>
@@ -48,12 +61,12 @@ const ListCom = ({ text, index, fetchTasks, deleteTask }) => {
             autoFocus
             fullWidth
             label="Task"
-            value={editedTask}
-            onChange={(e) => setEditedTask(e.target.value)}
+            value={editedTask.name}
+            onChange={(e) => setEditedTask({ ...editedTask, name: e.target.value })}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleEdit}>Save</Button>
+          <Button onClick={handleSaveEdit}>Save</Button>
         </DialogActions>
       </Dialog>
     </>
