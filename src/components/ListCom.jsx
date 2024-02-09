@@ -10,7 +10,7 @@ const ListCom = ({ text, index, fetchTasks, deleteTask }) => {
 
   const handleEdit = async () => {
     try {
-      await axios.put(`http://localhost:5000/tasks/${index}`, { task: editedTask });
+      await axios.put(`http://localhost:5000/tasks/${text._id}`, { name: editedTask.name, category: editedTask.category });
       setEditMode(false);
       fetchTasks();
     } catch (error) {
@@ -18,8 +18,13 @@ const ListCom = ({ text, index, fetchTasks, deleteTask }) => {
     }
   };
 
-  const handleDelete = () => {
-    deleteTask(index);
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`http://localhost:5000/tasks/${text._id}`);
+      fetchTasks();
+    } catch (error) {
+      console.error('Error deleting task:', error);
+    }
   };
 
   return (

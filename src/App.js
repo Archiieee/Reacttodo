@@ -22,9 +22,9 @@ function App() {
     }
   };
 
-  const deleteTask = async (index) => {
+  const deleteTask = async (taskId) => {
     try {
-      await axios.delete(`http://localhost:5000/tasks/${index}`);
+      await axios.delete(`http://localhost:5000/tasks/${taskId}`);
       fetchTasks();
     } catch (error) {
       console.error('Error deleting task:', error);
