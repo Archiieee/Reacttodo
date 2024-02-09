@@ -27,7 +27,7 @@ db.on('error', console.error.bind(console, 'MongoDB Atlas connection error:'));
 db.once('open', () => {
   console.log('Connected to MongoDB Atlas database');
 });
-
+// Route to fetch all tasks
 app.get('/tasks', async (req, res) => {
   try {
     const tasks = await Task.find();
@@ -36,7 +36,28 @@ app.get('/tasks', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+// Route to fetch tasks by category
+app.get('/tasks/:category', async (req, res) => {
+  const { category } = req.params;
+  try {
+    const tasks = await Task.find({ category });
+    res.json(tasks);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
+// Route to fetch all categories
+app.get('/categories', async (req, res) => {
+  try {
+    const categories = await Task.distinct('category');
+    res.json(categories);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Route to add a new task
 app.post('/tasks', async (req, res) => {
   const task = new Task({
     name: req.body.name,
@@ -49,7 +70,7 @@ app.post('/tasks', async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
-
+// Route to update a task
 app.put('/tasks/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -59,7 +80,7 @@ app.put('/tasks/:id', async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
-
+// Route to delete a task
 app.delete('/tasks/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -73,3 +94,4 @@ app.delete('/tasks/:id', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
