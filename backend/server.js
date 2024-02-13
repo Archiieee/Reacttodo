@@ -27,6 +27,19 @@ db.on('error', console.error.bind(console, 'MongoDB Atlas connection error:'));
 db.once('open', () => {
   console.log('Connected to MongoDB Atlas database');
 });
+// Route to fetch task details by ID
+app.get('/tasks/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const task = await Task.findById(id);
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found' });
+    }
+    res.json(task);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
 // Route to fetch all tasks
 app.get('/tasks', async (req, res) => {

@@ -25,8 +25,8 @@ const TaskDetails = () => {
   return (
     <div>
       <h2>Task Details</h2>
-      <p>Name: {task.name || 'Not available'}</p> {}
-      <p>Category: {task.category || 'Not available'}</p> {}
+      <p>Name: {task.name || 'Not available'}</p>
+      <p>Category: {task.category || 'Not available'}</p>
     </div>
   );
 };
