@@ -4,7 +4,7 @@ import TextField from '@mui/material/TextField';
 import axios from 'axios';
 import { Link } from 'react-router-dom'; 
 
-const ToDoList = ({ fetchTasks }) => {
+const ToDoList = () => {
   const [task, setTask] = useState('');
   const [category, setCategory] = useState('');
   const [tasks, setTasks] = useState([]);
@@ -16,7 +16,7 @@ const ToDoList = ({ fetchTasks }) => {
   useEffect(() => {
     fetchTasks();
     fetchCategories();
-  }, [fetchTasks]);
+  }, []);
 
   const fetchCategories = async () => {
     try {
@@ -24,6 +24,15 @@ const ToDoList = ({ fetchTasks }) => {
       setAllCategories(response.data);
     } catch (error) {
       console.error('Error fetching categories:', error);
+    }
+  };
+
+  const fetchTasks = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/tasks/all');
+      setTasks(response.data);
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
     }
   };
 
@@ -60,7 +69,7 @@ const ToDoList = ({ fetchTasks }) => {
   const handleSaveEdit = async () => {
     try {
       await axios.put(`http://localhost:5000/tasks/${editTask._id}`, editedTask);
-      await fetchTasks();
+      setTasks(prevTasks => prevTasks.map(prevTask => prevTask._id === editTask._id ? { ...prevTask, ...editedTask } : prevTask)); 
       setEditTask(null);
     } catch (error) {
       console.error('Error editing task:', error);
@@ -83,7 +92,7 @@ const ToDoList = ({ fetchTasks }) => {
   const deleteTask = async (taskId) => {
     try {
       await axios.delete(`http://localhost:5000/tasks/${taskId}`);
-      await fetchTasks();
+      setTasks(prevTasks => prevTasks.filter(prevTask => prevTask._id !== taskId));
     } catch (error) {
       console.error('Error deleting task:', error);
     }
@@ -126,6 +135,7 @@ const ToDoList = ({ fetchTasks }) => {
             <p>{task.name}</p>
             <Link to={{ pathname: `/task/${task._id}`, state: { task } }}><Button>View Details</Button></Link>
             <Button onClick={() => handleEdit(task)}>Edit</Button>
+            <Button onClick={() => deleteTask(task._id)}>Delete</Button>
           </div>
         ))}
         {editTask && (

@@ -46,7 +46,16 @@ app.get('/tasks/id/:id', async (req, res) => {
 });
 
 // Route to fetch all tasks
-app.get('/tasks', async (req, res) => {
+// app.get('/tasks', async (req, res) => {
+//   try {
+//     const tasks = await Task.find();
+//     res.json(tasks);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// });
+
+app.get('/tasks/all', async (req, res) => {
   try {
     const tasks = await Task.find();
     res.json(tasks);
@@ -54,6 +63,7 @@ app.get('/tasks', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
 
 // Route to fetch tasks by category
 app.get('/tasks/category/:category', async (req, res) => {
