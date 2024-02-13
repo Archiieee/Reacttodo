@@ -11,6 +11,7 @@ const ToDoList = ({ fetchTasks }) => {
   const [allCategories, setAllCategories] = useState([]);
   const [editTask, setEditTask] = useState(null);
   const [editedTask, setEditedTask] = useState({ name: '', category: '' });
+  const [description, setDescription] = useState('');
 
   useEffect(() => {
     fetchTasks();
@@ -34,7 +35,6 @@ const ToDoList = ({ fetchTasks }) => {
       console.error('Error fetching tasks by category:', error);
     }
   };
-  
 
   const addTask = async () => {
     try {
@@ -42,10 +42,11 @@ const ToDoList = ({ fetchTasks }) => {
         await axios.post('http://localhost:5000/categories', { category });
         await fetchCategories();
       }
-      await axios.post('http://localhost:5000/tasks', { name: task, category });
+      await axios.post('http://localhost:5000/tasks', { name: task, category, description });
       await fetchTasks();
       setTask('');
       setCategory('');
+      setDescription('');
     } catch (error) {
       console.error('Error adding task:', error);
     }
@@ -78,7 +79,6 @@ const ToDoList = ({ fetchTasks }) => {
       console.error('Error handling category change:', error);
     }
   };
-  
 
   const deleteTask = async (taskId) => {
     try {
@@ -106,6 +106,12 @@ const ToDoList = ({ fetchTasks }) => {
           placeholder="Category"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
+        />
+        <TextField
+          type="text"
+          placeholder="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
         />
         <select value={category} onChange={(e) => handleCategoryChange(e.target.value)}>
           <option value="">All Categories</option>

@@ -27,6 +27,7 @@ const TaskDetails = () => {
       <h2>Task Details</h2>
       <p>Name: {task.name || 'Not available'}</p>
       <p>Category: {task.category || 'Not available'}</p>
+      <p>Description: {task.description || 'Not available'}</p> {}
     </div>
   );
 };

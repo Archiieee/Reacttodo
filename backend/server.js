@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const Task = require('./models/task'); 
+const Task = require('./models/task');
 
 const app = express();
 const PORT = 5000;
@@ -10,23 +10,27 @@ const PORT = 5000;
 app.use(bodyParser.json());
 app.use(cors());
 
+const MONGODB_URI =
+  'mongodb+srv://grp11majorproject:O38gMQD141ndO2zi@cluster0.2ppfaax.mongodb.net/?retryWrites=true&w=majority';
 
-const MONGODB_URI = "mongodb+srv://grp11majorproject:O38gMQD141ndO2zi@cluster0.2ppfaax.mongodb.net/?retryWrites=true&w=majority";
-
-mongoose.connect(MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}).then(() => {
-  console.log('Connected to MongoDB Atlas database');
-}).catch((error) => {
-  console.error('MongoDB Atlas connection error:', error);
-});
+mongoose
+  .connect(MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log('Connected to MongoDB Atlas database');
+  })
+  .catch((error) => {
+    console.error('MongoDB Atlas connection error:', error);
+  });
 
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB Atlas connection error:'));
 db.once('open', () => {
   console.log('Connected to MongoDB Atlas database');
 });
+
 // Route to fetch task details by ID
 app.get('/tasks/id/:id', async (req, res) => {
   const { id } = req.params;
@@ -74,10 +78,11 @@ app.get('/categories', async (req, res) => {
 
 // Route to add a new task
 app.post('/tasks', async (req, res) => {
-  const { name, category } = req.body;
+  const { name, category, description } = req.body; // Include description in request body
   const task = new Task({
     name,
     category,
+    description, // Save description in the database
   });
   try {
     const newTask = await task.save();
@@ -109,9 +114,13 @@ app.post('/categories', async (req, res) => {
 // Route to update a task
 app.put('/tasks/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, category } = req.body;
+  const { name, category, description } = req.body; // Include description in request body
   try {
-    const updatedTask = await Task.findByIdAndUpdate(id, { name, category }, { new: true });
+    const updatedTask = await Task.findByIdAndUpdate(
+      id,
+      { name, category, description }, // Update description along with name and category
+      { new: true }
+    );
     res.json(updatedTask);
   } catch (err) {
     res.status(400).json({ message: err.message });
