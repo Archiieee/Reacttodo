@@ -28,12 +28,13 @@ const ToDoList = ({ fetchTasks }) => {
 
   const fetchTasksByCategory = async (selectedCategory) => {
     try {
-      const response = await axios.get(`http://localhost:5000/tasks/${selectedCategory}`);
+      const response = await axios.get(`http://localhost:5000/tasks/category/${selectedCategory}`);
       setTasks(response.data);
     } catch (error) {
       console.error('Error fetching tasks by category:', error);
     }
   };
+  
 
   const addTask = async () => {
     try {
@@ -65,14 +66,19 @@ const ToDoList = ({ fetchTasks }) => {
     }
   };
 
-  const handleCategoryChange = (selectedCategory) => {
-    if (selectedCategory === '') {
-      fetchTasks();
-    } else {
-      fetchTasksByCategory(selectedCategory);
+  const handleCategoryChange = async (selectedCategory) => {
+    try {
+      if (selectedCategory === '') {
+        await fetchTasks();
+      } else {
+        await fetchTasksByCategory(selectedCategory);
+      }
+      setCategory(selectedCategory);
+    } catch (error) {
+      console.error('Error handling category change:', error);
     }
-    setCategory(selectedCategory);
   };
+  
 
   const deleteTask = async (taskId) => {
     try {

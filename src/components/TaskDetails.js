@@ -9,7 +9,7 @@ const TaskDetails = () => {
   useEffect(() => {
     const fetchTaskDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/tasks/${taskId}`);
+        const response = await axios.get(`http://localhost:5000/tasks/id/${taskId}`);
         setTask(response.data); 
       } catch (error) {
         console.error('Error fetching task details:', error);

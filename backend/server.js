@@ -28,7 +28,7 @@ db.once('open', () => {
   console.log('Connected to MongoDB Atlas database');
 });
 // Route to fetch task details by ID
-app.get('/tasks/:id', async (req, res) => {
+app.get('/tasks/id/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const task = await Task.findById(id);
@@ -52,7 +52,7 @@ app.get('/tasks', async (req, res) => {
 });
 
 // Route to fetch tasks by category
-app.get('/tasks/:category', async (req, res) => {
+app.get('/tasks/category/:category', async (req, res) => {
   const { category } = req.params;
   try {
     const tasks = await Task.find({ category });
