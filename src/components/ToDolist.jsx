@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import axios from 'axios';
+import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 
 const ToDoList = ({ fetchTasks }) => {
   const [task, setTask] = useState('');
@@ -9,15 +10,13 @@ const ToDoList = ({ fetchTasks }) => {
   const [tasks, setTasks] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
   const [editTask, setEditTask] = useState(null);
-  const [editedTask, setEditedTask] = useState({ name: '', category: '' }); // Define editedTask
+  const [editedTask, setEditedTask] = useState({ name: '', category: '' });
 
   useEffect(() => {
     fetchTasks();
     fetchCategories();
   }, [fetchTasks]);
 
-
-  
   const fetchCategories = async () => {
     try {
       const response = await axios.get('http://localhost:5000/categories');
@@ -38,8 +37,12 @@ const ToDoList = ({ fetchTasks }) => {
 
   const addTask = async () => {
     try {
+      if (!allCategories.includes(category)) {
+        await axios.post('http://localhost:5000/categories', { category });
+        await fetchCategories();
+      }
       await axios.post('http://localhost:5000/tasks', { name: task, category });
-      fetchTasks(); 
+      await fetchTasks();
       setTask('');
       setCategory('');
     } catch (error) {
@@ -55,7 +58,7 @@ const ToDoList = ({ fetchTasks }) => {
   const handleSaveEdit = async () => {
     try {
       await axios.put(`http://localhost:5000/tasks/${editTask._id}`, editedTask);
-      fetchTasks();
+      await fetchTasks();
       setTask('');
       setCategory('');
       setEditTask(null);
@@ -71,6 +74,15 @@ const ToDoList = ({ fetchTasks }) => {
       fetchTasksByCategory(selectedCategory);
     }
     setCategory(selectedCategory);
+  };
+
+  const deleteTask = async (taskId) => {
+    try {
+      await axios.delete(`http://localhost:5000/tasks/${taskId}`);
+      await fetchTasks();
+    } catch (error) {
+      console.error('Error deleting task:', error);
+    }
   };
 
   return (
@@ -99,9 +111,10 @@ const ToDoList = ({ fetchTasks }) => {
         </select>
         <Button onClick={addTask}>Add</Button>
         <br />
-        {tasks.map(task => (
+        {tasks.map((task) => (
           <div key={task._id}>
             <p>{task.name}</p>
+            <Link to={`/task/${task._id}`}><Button>View Details</Button></Link> {/* Button to view task details */}
             <Button onClick={() => handleEdit(task)}>Edit</Button>
           </div>
         ))}
@@ -110,14 +123,14 @@ const ToDoList = ({ fetchTasks }) => {
             <TextField
               type="text"
               placeholder="Edit Task"
-              value={editedTask.name} // Use editedTask.name instead of task
-              onChange={(e) => setEditedTask({ ...editedTask, name: e.target.value })} // Update editedTask
+              value={editedTask.name}
+              onChange={(e) => setEditedTask({ ...editedTask, name: e.target.value })}
             />
             <TextField
               type="text"
               placeholder="Edit Category"
-              value={editedTask.category} // Use editedTask.category instead of category
-              onChange={(e) => setEditedTask({ ...editedTask, category: e.target.value })} // Update editedTask
+              value={editedTask.category}
+              onChange={(e) => setEditedTask({ ...editedTask, category: e.target.value })}
             />
             <Button onClick={handleSaveEdit}>Save</Button>
           </div>

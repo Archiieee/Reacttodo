@@ -27,6 +27,7 @@ db.on('error', console.error.bind(console, 'MongoDB Atlas connection error:'));
 db.once('open', () => {
   console.log('Connected to MongoDB Atlas database');
 });
+
 // Route to fetch all tasks
 app.get('/tasks', async (req, res) => {
   try {
@@ -36,6 +37,7 @@ app.get('/tasks', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
 // Route to fetch tasks by category
 app.get('/tasks/:category', async (req, res) => {
   const { category } = req.params;
@@ -59,9 +61,10 @@ app.get('/categories', async (req, res) => {
 
 // Route to add a new task
 app.post('/tasks', async (req, res) => {
+  const { name, category } = req.body;
   const task = new Task({
-    name: req.body.name,
-    category: req.body.category,
+    name,
+    category,
   });
   try {
     const newTask = await task.save();
@@ -70,16 +73,38 @@ app.post('/tasks', async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+
+// Route to add a new category
+app.post('/categories', async (req, res) => {
+  const { category } = req.body;
+  try {
+    // Check if the category already exists
+    const existingCategory = await Task.findOne({ category });
+    if (existingCategory) {
+      res.status(400).json({ message: 'Category already exists' });
+    } else {
+      // Create a new category document
+      const newCategory = new Task({ category });
+      await newCategory.save();
+      res.status(201).json(newCategory);
+    }
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
 // Route to update a task
 app.put('/tasks/:id', async (req, res) => {
   const { id } = req.params;
+  const { name, category } = req.body;
   try {
-    const updatedTask = await Task.findByIdAndUpdate(id, req.body, { new: true });
+    const updatedTask = await Task.findByIdAndUpdate(id, { name, category }, { new: true });
     res.json(updatedTask);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 });
+
 // Route to delete a task
 app.delete('/tasks/:id', async (req, res) => {
   const { id } = req.params;
@@ -94,4 +119,3 @@ app.delete('/tasks/:id', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-

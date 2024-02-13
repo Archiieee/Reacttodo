@@ -1,43 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import axios from 'axios';
-import ToDoList from './components/ToDolist';
-import ListCom from './components/ListCom';
-
-
-
+import ToDoList from './components/ToDolist'; // Import ToDoList component
+import TaskDetails from './components/TaskDetails'; // Import TaskDetails component
 
 function App() {
-  const [tasks, setTasks] = useState([]);
-
-  useEffect(() => {
-    fetchTasks();
-  }, []);
-
+  // Define the fetchTasks function
   const fetchTasks = async () => {
     try {
       const response = await axios.get('http://localhost:5000/tasks');
-      setTasks(response.data);
+      return response.data;
     } catch (error) {
       console.error('Error fetching tasks:', error);
-    }
-  };
-
-  const deleteTask = async (taskId) => {
-    try {
-      await axios.delete(`http://localhost:5000/tasks/${taskId}`);
-      fetchTasks();
-    } catch (error) {
-      console.error('Error deleting task:', error);
+      return []; // Return an empty array if there's an error
     }
   };
 
   return (
-    <div>
-      <ToDoList fetchTasks={fetchTasks} />
-      {tasks.map((task, index) => (
-        <ListCom key={index} text={task} index={index} fetchTasks={fetchTasks} deleteTask={deleteTask} />
-      ))}
-    </div>
+    <Router>
+      <div>
+        <Switch>
+          <Route exact path="/">
+            {/* Render ToDoList component and pass fetchTasks function as prop */}
+            <ToDoList fetchTasks={fetchTasks} />
+          </Route>
+          <Route path="/task/:taskId">
+            {/* Render TaskDetails component */}
+            <TaskDetails fetchTasks={fetchTasks} />
+          </Route>
+        </Switch>
+      </div>
+    </Router>
   );
 }
 

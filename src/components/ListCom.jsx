@@ -1,26 +1,19 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import { IconButton, ListItem, ListItemText, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material'; // Import necessary components from @mui/material
+import { IconButton, ListItem, ListItemText, Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
 import axios from 'axios';
 
 const ListCom = ({ text, index, fetchTasks, deleteTask }) => {
   const [editMode, setEditMode] = useState(false);
   const [editedTask, setEditedTask] = useState(text);
 
-  // const handleEdit = async () => {
-  //   try {
-  //     await axios.put(`http://localhost:5000/tasks/${text._id}`, { name: editedTask.name, category: editedTask.category });
-  //     setEditMode(false);
-  //     fetchTasks();
-  //   } catch (error) {
-  //     console.error('Error editing task:', error);
-  //   }
-  // };
   const handleEdit = () => {
-    setEditedTask(text); // Set the initial value for editing
+    setEditedTask(text);
     setEditMode(true);
   };
+
   const handleSaveEdit = async () => {
     try {
       await axios.put(`http://localhost:5000/tasks/${text._id}`, editedTask);
@@ -52,6 +45,7 @@ const ListCom = ({ text, index, fetchTasks, deleteTask }) => {
         <IconButton onClick={handleDelete}>
           <DeleteIcon />
         </IconButton>
+        <Link to={`/task/${text._id}`}>View Details</Link> {/* Add Link component */}
       </ListItem>
 
       <Dialog open={editMode} onClose={() => setEditMode(false)}>
