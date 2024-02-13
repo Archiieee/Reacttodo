@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import axios from 'axios';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import { Link } from 'react-router-dom'; 
 
 const ToDoList = ({ fetchTasks }) => {
   const [task, setTask] = useState('');
@@ -59,8 +59,6 @@ const ToDoList = ({ fetchTasks }) => {
     try {
       await axios.put(`http://localhost:5000/tasks/${editTask._id}`, editedTask);
       await fetchTasks();
-      setTask('');
-      setCategory('');
       setEditTask(null);
     } catch (error) {
       console.error('Error editing task:', error);
@@ -103,7 +101,7 @@ const ToDoList = ({ fetchTasks }) => {
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         />
-        <select value={category} onChange={(e) => { setCategory(e.target.value); handleCategoryChange(e.target.value); }}>
+        <select value={category} onChange={(e) => handleCategoryChange(e.target.value)}>
           <option value="">All Categories</option>
           {allCategories.map((cat) => (
             <option key={cat} value={cat}>{cat}</option>
@@ -114,7 +112,7 @@ const ToDoList = ({ fetchTasks }) => {
         {tasks.map((task) => (
           <div key={task._id}>
             <p>{task.name}</p>
-            <Link to={`/task/${task._id}`}><Button>View Details</Button></Link> {/* Button to view task details */}
+            <Link to={{ pathname: `/task/${task._id}`, state: { task } }}><Button>View Details</Button></Link>
             <Button onClick={() => handleEdit(task)}>Edit</Button>
           </div>
         ))}

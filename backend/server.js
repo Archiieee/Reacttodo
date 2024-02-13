@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const Task = require('./models/task'); // Make sure the path to your Task model is correct
+const Task = require('./models/task'); 
 
 const app = express();
 const PORT = 5000;
@@ -10,7 +10,7 @@ const PORT = 5000;
 app.use(bodyParser.json());
 app.use(cors());
 
-// Connect to MongoDB Atlas database
+
 const MONGODB_URI = "mongodb+srv://grp11majorproject:O38gMQD141ndO2zi@cluster0.2ppfaax.mongodb.net/?retryWrites=true&w=majority";
 
 mongoose.connect(MONGODB_URI, {

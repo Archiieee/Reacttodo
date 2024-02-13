@@ -45,7 +45,7 @@ const ListCom = ({ text, index, fetchTasks, deleteTask }) => {
         <IconButton onClick={handleDelete}>
           <DeleteIcon />
         </IconButton>
-        <Link to={`/task/${text._id}`}>View Details</Link> {/* Add Link component */}
+        <Link to={`/task/${text._id}`}>View Details</Link> {}
       </ListItem>
 
       <Dialog open={editMode} onClose={() => setEditMode(false)}>
