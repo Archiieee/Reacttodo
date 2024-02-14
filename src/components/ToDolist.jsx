@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import axios from 'axios';
-import { Link } from 'react-router-dom'; 
+import { Link } from 'react-router-dom';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 
 const ToDoList = () => {
   const [task, setTask] = useState('');
@@ -12,6 +14,7 @@ const ToDoList = () => {
   const [editTask, setEditTask] = useState(null);
   const [editedTask, setEditedTask] = useState({ name: '', category: '' });
   const [description, setDescription] = useState('');
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     fetchTasks();
@@ -47,15 +50,23 @@ const ToDoList = () => {
 
   const addTask = async () => {
     try {
-      if (!allCategories.includes(category)) {
-        await axios.post('http://localhost:5000/categories', { category });
-        await fetchCategories();
+      // Check if each selected category already exists
+      for (const selectedCategory of categories) {
+        if (!allCategories.includes(selectedCategory)) {
+          await axios.post('http://localhost:5000/categories', { category: selectedCategory });
+          setAllCategories(prevCategories => [...prevCategories, selectedCategory]);
+        }
       }
-      await axios.post('http://localhost:5000/tasks', { name: task, category, description });
+      // Add the task with multiple categories
+      await axios.post('http://localhost:5000/tasks', { name: task, categories, description });
+      // Other logic remains the same
       await fetchTasks();
+      // Reset input fields
       setTask('');
       setCategory('');
       setDescription('');
+      // Ensure the added category is included in allCategories state
+      setAllCategories(prevCategories => [...prevCategories, ...categories]);
     } catch (error) {
       console.error('Error adding task:', error);
     }
@@ -69,7 +80,7 @@ const ToDoList = () => {
   const handleSaveEdit = async () => {
     try {
       await axios.put(`http://localhost:5000/tasks/${editTask._id}`, editedTask);
-      setTasks(prevTasks => prevTasks.map(prevTask => prevTask._id === editTask._id ? { ...prevTask, ...editedTask } : prevTask)); 
+      setTasks(prevTasks => prevTasks.map(prevTask => prevTask._id === editTask._id ? { ...prevTask, ...editedTask } : prevTask));
       setEditTask(null);
     } catch (error) {
       console.error('Error editing task:', error);
@@ -128,15 +139,18 @@ const ToDoList = () => {
             <option key={cat} value={cat}>{cat}</option>
           ))}
         </select>
+
         <Button onClick={addTask}>Add</Button>
         <br />
         {tasks.map((task) => (
-          <div key={task._id}>
-            <p>{task.name}</p>
-            <Link to={{ pathname: `/task/${task._id}`, state: { task } }}><Button>View Details</Button></Link>
-            <Button onClick={() => handleEdit(task)}>Edit</Button>
-            <Button onClick={() => deleteTask(task._id)}>Delete</Button>
-          </div>
+          <Card key={task._id} style={{ marginBottom: '10px' }}>
+            <CardContent>
+              <p>{task.name}</p>
+              <Link to={{ pathname: `/task/${task._id}`, state: { task } }}><Button>View Details</Button></Link>
+              <Button onClick={() => handleEdit(task)}>Edit</Button>
+              <Button onClick={() => deleteTask(task._id)}>Delete</Button>
+            </CardContent>
+          </Card>
         ))}
         {editTask && (
           <div>

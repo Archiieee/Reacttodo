@@ -45,15 +45,6 @@ app.get('/tasks/id/:id', async (req, res) => {
   }
 });
 
-// Route to fetch all tasks
-// app.get('/tasks', async (req, res) => {
-//   try {
-//     const tasks = await Task.find();
-//     res.json(tasks);
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// });
 
 app.get('/tasks/all', async (req, res) => {
   try {
@@ -88,12 +79,13 @@ app.get('/categories', async (req, res) => {
 
 // Route to add a new task
 app.post('/tasks', async (req, res) => {
-  const { name, category, description } = req.body; // Include description in request body
+  const { name, categories, description } = req.body; // Adjust to accept categories as an array
   const task = new Task({
     name,
-    category,
-    description, // Save description in the database
+    categories, // Update to accept categories as an array
+    description,
   });
+  
   try {
     const newTask = await task.save();
     res.status(201).json(newTask);
