@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const Task = require('./models/task');
+const Category = require('./models/category');
 
 const app = express();
 const PORT = 5000;
@@ -79,13 +80,13 @@ app.get('/categories', async (req, res) => {
 
 // Route to add a new task
 app.post('/tasks', async (req, res) => {
-  const { name, categories, description } = req.body; // Adjust to accept categories as an array
+  const { name, category, description } = req.body; // Adjust to accept categories as an array
   const task = new Task({
     name,
-    categories, // Update to accept categories as an array
+    category: Array.isArray(category) ? category : [category], // Update to accept categories as an array
     description,
   });
-  
+
   try {
     const newTask = await task.save();
     res.status(201).json(newTask);
@@ -93,6 +94,7 @@ app.post('/tasks', async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 });
+
 
 // Route to add a new category
 app.post('/categories', async (req, res) => {
