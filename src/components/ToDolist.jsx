@@ -24,13 +24,11 @@ const ToDoList = () => {
   const fetchCategories = async () => {
     try {
       const response = await axios.get('http://localhost:5000/categories');
-      console.log('Fetched categories:', response.data);
-      setAllCategories(response.data); // Set categories using setAllCategories
+      setAllCategories(response.data);
     } catch (error) {
       console.error('Error fetching categories:', error);
     }
   };
-  
 
   const fetchTasks = async () => {
     try {
@@ -60,19 +58,24 @@ const ToDoList = () => {
         }
       }
     
-      await axios.post('http://localhost:5000/tasks', { name: task, category: categories[0], description });
+      // Send the task name, category, and description to the backend
+      await axios.post('http://localhost:5000/tasks', { name: task, category: category, description: description });
       
+      // Fetch updated tasks after adding the new task
       await fetchTasks();
       
+      // Reset input fields and categories
       setTask('');
       setCategory('');
       setDescription('');
      
-     // setAllCategories(prevCategories => [...prevCategories, ...categories]);
+      // Add newly entered categories to the list of all categories
+      setAllCategories(prevCategories => [...prevCategories, ...categories]);
     } catch (error) {
       console.error('Error adding task:', error);
     }
   };
+  
 
   const handleEdit = (task) => {
     setEditTask(task);
