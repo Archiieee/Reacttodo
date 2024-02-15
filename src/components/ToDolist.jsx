@@ -138,12 +138,13 @@ const ToDoList = () => {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
-        <select value={category} onChange={(e) => handleCategoryChange(e.target.value)}>
-          <option value="">All Categories</option>
-          {allCategories.map((cat) => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
+       <select value={category} onChange={(e) => handleCategoryChange(e.target.value)}>
+       <option value="">All Categories</option>
+        {allCategories.map((cat) => (
+          <option key={cat} value={cat}>{cat}</option>
+        ))}
         </select>
+
 
         <Button onClick={addTask}>Add</Button>
         <br />
