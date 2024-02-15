@@ -57,15 +57,15 @@ const ToDoList = () => {
           setAllCategories(prevCategories => [...prevCategories, selectedCategory]);
         }
       }
-      // Add the task with multiple categories
+    
       await axios.post('http://localhost:5000/tasks', { name: task, categories, description });
-      // Other logic remains the same
+      
       await fetchTasks();
-      // Reset input fields
+      
       setTask('');
       setCategory('');
       setDescription('');
-      // Ensure the added category is included in allCategories state
+     
       setAllCategories(prevCategories => [...prevCategories, ...categories]);
     } catch (error) {
       console.error('Error adding task:', error);
