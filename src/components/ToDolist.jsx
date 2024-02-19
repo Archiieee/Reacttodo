@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import { useSelector } from 'react-redux';
 
 const ToDoList = () => {
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
   const [task, setTask] = useState('');
   const [category, setCategory] = useState('');
   const [tasks, setTasks] = useState([]);
@@ -116,66 +118,70 @@ const ToDoList = () => {
 
   return (
     <div className="main_div">
-      <div className="center_div">
-        <br />
-        <h1>TO DO LIST</h1>
-        <br />
-        <TextField
-          type="text"
-          placeholder="Add Task"
-          value={task}
-          onChange={(e) => setTask(e.target.value)}
-        />
-        <TextField
-          type="text"
-          placeholder="Category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        />
-        <TextField
-          type="text"
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-       <select value={category} onChange={(e) => handleCategoryChange(e.target.value)}>
-       <option value="">All Categories</option>
-        {allCategories.map((cat) => (
-          <option key={cat} value={cat}>{cat}</option>
-        ))}
-        </select>
+      {isAuthenticated ? (
+        <div className="center_div">
+          <br />
+          <h1>TO DO LIST</h1>
+          <br />
+          <TextField
+            type="text"
+            placeholder="Add Task"
+            value={task}
+            onChange={(e) => setTask(e.target.value)}
+          />
+          <TextField
+            type="text"
+            placeholder="Category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          />
+          <TextField
+            type="text"
+            placeholder="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+          <select value={category} onChange={(e) => handleCategoryChange(e.target.value)}>
+            <option value="">All Categories</option>
+            {allCategories.map((cat) => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
 
 
-        <Button onClick={addTask}>Add</Button>
-        <br />
-        {tasks.map((task) => (
-          <Card key={task._id} style={{ marginBottom: '10px' }}>
-            <CardContent>
-              <p>{task.name}</p>
-              <Link to={{ pathname: `/task/${task._id}`, state: { task } }}><Button>View Details</Button></Link>
-              <Button onClick={() => handleEdit(task)}>Edit</Button>
-              <Button onClick={() => deleteTask(task._id)}>Delete</Button>
-            </CardContent>
-          </Card>
-        ))}
-        {editTask && (
-          <div>
-            <TextField
-              type="text"
-              placeholder="Edit Task"
-              value={editedTask.name}
-              onChange={(e) => setEditedTask({ ...editedTask, name: e.target.value })}
-            />
-            <TextField
-              type="text"
-              placeholder="Edit Category"
-              value={editedTask.category}
-              onChange={(e) => setEditedTask({ ...editedTask, category: e.target.value })}
-            />
-            <Button onClick={handleSaveEdit}>Save</Button>
-          </div>
-        )}
-      </div>
+          <Button onClick={addTask}>Add</Button>
+          <br />
+          {tasks.map((task) => (
+            <Card key={task._id} style={{ marginBottom: '10px' }}>
+              <CardContent>
+                <p>{task.name}</p>
+                <Link to={{ pathname: `/task/${task._id}`, state: { task } }}><Button>View Details</Button></Link>
+                <Button onClick={() => handleEdit(task)}>Edit</Button>
+                <Button onClick={() => deleteTask(task._id)}>Delete</Button>
+              </CardContent>
+            </Card>
+          ))}
+          {editTask && (
+            <div>
+              <TextField
+                type="text"
+                placeholder="Edit Task"
+                value={editedTask.name}
+                onChange={(e) => setEditedTask({ ...editedTask, name: e.target.value })}
+              />
+              <TextField
+                type="text"
+                placeholder="Edit Category"
+                value={editedTask.category}
+                onChange={(e) => setEditedTask({ ...editedTask, category: e.target.value })}
+              />
+              <Button onClick={handleSaveEdit}>Save</Button>
+            </div>
+          )}
+        </div>
+      ) : (
+        <Redirect to="/login" /> // Redirect to login page if not authenticated
+      )}
     </div>
   );
 };
