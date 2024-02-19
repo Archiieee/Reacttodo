@@ -1,20 +1,20 @@
-// var jwt = require('jsonwebtoken');
-// const JWT_SECRET = "ThisIsASecret$tring";
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = "SecretKeyString"; 
+const User = require('../models/User');
 
-// const fetchuser = (req, res, next) =>{
-//     //Get the user from the jwt token and add id to req object 
-//     const token = req.header('auth-token');
-//     if(!token){
-//         res.status(401).send({error : "Please authenticate with valid token"});
-//     }
-//     try {
-//         const data = jwt.verify(token , JWT_SECRET);
-//         req.user = data.user ; 
-//         next() ; 
-//     } catch (error) {
-//         res.status(401).send({error : "Please authenticate with valid token"});
-        
-//     }
-// }
+const fetchUser = (req, res, next) => {
+  // Get the token from the header
+  const token = req.header('auth-token');
+  if (!token) return res.status(401).send('Access denied');
 
-// module.exports = fetchuser
+  try {
+    // Verify the token
+    const verified = jwt.verify(token, JWT_SECRET);
+    req.user = verified.user;
+    next();
+  } catch (err) {
+    res.status(400).send('Invalid token');
+  }
+};
+
+module.exports = fetchUser;

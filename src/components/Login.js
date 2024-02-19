@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import axios from 'axios';
 
 const Login = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const history = useHistory();
@@ -11,13 +11,19 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       const response = await axios.post('http://localhost:5000/login', {
-        username: username,
+        username: email,
         password: password
       });
-    
+  
       console.log(response.data);
-      // Redirect to ToDoList page after successful login
-      history.push('/todolist');
+  
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        // Redirect to the todo list page after successful login
+        history.push('/todolist');
+      } else {
+        setError('Invalid credentials');
+      }
     } catch (error) {
       console.error('Error logging in:', error);
       setError('Invalid username or password');
@@ -29,10 +35,10 @@ const Login = () => {
       <h1>Login Page</h1>
       {error && <p>{error}</p>}
       <input
-        type="text"
-        placeholder="Username"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
       />
       <input
         type="password"

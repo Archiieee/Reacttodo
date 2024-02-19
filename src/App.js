@@ -1,21 +1,15 @@
+
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import ToDoList from './components/ToDolist';
 import TaskDetails from './components/TaskDetails';
-import Login from './Login';
-import Register from './Register';
-import axios from 'axios';
+import Login from './components/Login';
+import Register from './components/Register';
+import PrivateRoute from './components/privateRoute.js';
 
 function App() {
-  const fetchTasks = async () => {
-    try {
-      const response = await axios.get('http://localhost:5000/tasks');
-      return response.data;
-    } catch (error) {
-      console.error('Error fetching tasks:', error);
-      return [];
-    }
-  };
+  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
 
   return (
     <Router>
@@ -23,8 +17,10 @@ function App() {
         <Switch>
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />
-          <Route exact path="/todolist" render={() => <ToDoList fetchTasks={fetchTasks} />} />
-          <Route path="/task/:taskId" render={() => <TaskDetails fetchTasks={fetchTasks} />} />
+          <Route exact path="/todolist" element={<PrivateRoute><ToDoList/></PrivateRoute>} >
+            {isAuthenticated ? <ToDoList /> : <Redirect to="/login" />}
+          </Route>
+          <Route path="/task/:taskId" component={TaskDetails} />
         </Switch>
       </div>
     </Router>
